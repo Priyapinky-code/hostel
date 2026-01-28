@@ -13,8 +13,11 @@ $contactno=$_POST['contact'];
 $paddress=$_POST['paddress'];
 $emailid=$_POST['email'];
 $warden_name=$_POST['warden_name'];
+$medical_status = trim($_POST['medical_status']);
+$taluk = $_POST['taluk'];
 $dr_name = $_POST['drname'];
 $password=$_POST['password'];
+
 	$result ="SELECT count(*) FROM userRegistration WHERE email=? || stdid=?";
 		$stmt = $mysqli->prepare($result);
 		$stmt->bind_param('ss',$email,$stdid);
@@ -27,12 +30,12 @@ if($count>0)
 echo"<script>alert('Registration number or email id already registered.');</script>";
 }else{
 
-$query="insert into  userRegistration(stdid,hname,sname,scname,gender,blood_group,contactNo,permanent_address,email,warden_name,dr_name,password) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+$query="insert into  userRegistration(stdid,hname,sname,scname,gender,blood_group,contactNo,permanent_address,email,warden_name,dr_name,password,medical_status,taluk) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 $stmt = $mysqli->prepare($query);
 if (!$stmt) {
     die("Prepare failed: " . $mysqli->error);
 }
-$rc=$stmt->bind_param('ssssssssssss',$stdid,$hname,$sname,$scname,$gender,$blood,$contactno,$permanent_address,$emailid,$warden_name,$drname,$password);
+$rc=$stmt->bind_param('ssssssssssssss',$stdid,$hname,$sname,$scname,$gender,$blood,$contactno,$permanent_address,$emailid,$warden_name,$drname,$password,$medical_status,$taluk);
 $stmt->execute();
 echo"<script>alert('Student Succssfully register');</script>";
 }
@@ -128,10 +131,10 @@ return true;
 <div class="form-group">
 <label class="col-sm-2 control-label">Gender : </label>
 <div class="col-sm-8">
-<select name="gender" class="form-control" required="required">
-<option value="">Select Gender</option>
-<option value="male">Girl</option>
-<option value="female">Boy</option>
+<select name="gender" class="form-control" required>
+  <option value="">Select Gender</option>
+  <option value="male">Boy</option>
+  <option value="female">Girl</option>
 </select>
 </div>
 </div>
@@ -142,13 +145,13 @@ return true;
 <div class="col-sm-8">
 <select name="blood" class="form-control" required="required">
 <option value="">Select Blood Group</option>
-<option value="male">O+</option>
-<option value="female">O-</option>
-<option value="female">A+</option>
-<option value="female">A-</option>
-<option value="female">B+</option>
-<option value="female">AB+</option>
-<option value="female">AB-</option>
+<<option value="O+">O+</option>
+<option value="O-">O-</option>
+<option value="A+">A+</option>
+<option value="A-">A-</option>
+<option value="B+">B+</option>
+<option value="AB+">AB+</option>
+<option value="AB-">AB-</option>
 
 </select>
 </div>
@@ -163,13 +166,13 @@ return true;
 <div class="form-group">
 <label class="col-sm-2 control-label">Taluk : </label>
 <div class="col-sm-8">
-<select name="gender" class="form-control" required="required">
-<option value="">Select Taluk</option>
-<option value="male">Channagiri</option>
-<option value="female">Davanagere</option>
-<option value="female">Harihara</option>
-<option value="female">Honnali</option>
-<option value="female">Jagalur</option>
+<select name="taluk" class="form-control" required>
+  <option value="">Select Taluk</option>
+  <option value="Channagiri">Channagiri</option>
+  <option value="Davanagere">Davanagere</option>
+  <option value="Harihara">Harihara</option>
+  <option value="Honnali">Honnali</option>
+  <option value="Jagalur">Jagalur</option>
 </select>
 </div>
 </div>
@@ -201,6 +204,16 @@ return true;
 <div class="col-sm-8">
 <input type="text" name="ckpdate" id="ckpdate"  class="form-control" " required="required">
 <span id="user-availability-status" style="font-size:12px;"></span>
+</div>
+</div>
+<div class="form-group">
+<label class="col-sm-2 control-label">Health Check-Up  : </label>
+<div class="col-sm-8">
+<select name="medical_status" class="form-control" required>
+  <option value="">Select Status</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select>
 </div>
 </div>
 <div class="form-group">

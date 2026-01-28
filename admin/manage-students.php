@@ -1,21 +1,37 @@
 <?php
 session_start();
 include('includes/config.php');
-// include('includes/checklogin.php');
-// check_login();
+$totalStudents = 20000;
 
-// if(isset($_GET['del']))
-// {
-// 	$id=intval($_GET['del']);
-// 	$adn="delete from registration where regNo=?";
-// 		$stmt= $mysqli->prepare($adn);
-// 		$stmt->bind_param('i',$id);
-//         $stmt->execute();
-//         $stmt->close();	   
+$district = "Davangere";
+$sql = "
+SELECT 
+    SUM(TRIM(LOWER(medical_status)) = 'yes') AS checked,
+    SUM(TRIM(LOWER(medical_status)) = 'no') AS not_checked
+FROM userregistration
+";
+$stmt = $mysqli->prepare($sql);
+$stmt->execute();
+$stmt->bind_result($checked, $notChecked);
+$stmt->fetch();
+$stmt->close();
 
+// $sql = "
+// SELECT 
+//     COUNT(*) AS total,
+//     SUM(TRIM(LOWER(medical_status)) = 'yes') AS checked,
+//     SUM(TRIM(LOWER(medical_status)) = 'no') AS not_checked
+// FROM userregistration
+// ";
 
-// }
+// $stmt = $mysqli->prepare($sql);
+// $stmt->execute();
+// $stmt->bind_result($totalStudents, $checked, $notChecked);
+// $stmt->fetch();
+// $stmt->close();
 ?>
+
+
 <!doctype html>
 <html lang="en" class="no-js">
 
@@ -35,17 +51,7 @@ include('includes/config.php');
 	<link rel="stylesheet" href="css/fileinput.min.css">
 	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
 	<link rel="stylesheet" href="css/style.css">
-<!-- <script language="javascript" type="text/javascript">
-var popUpWin=0;
-function popUpWindow(URLStr, left, top, width, height)
-{
- if(popUpWin)
-{
-if(!popUpWin.closed) popUpWin.close();
-}
-popUpWin = open(URLStr,'popUpWin', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no,copyhistory=yes,width='+510+',height='+430+',left='+left+', top='+top+',screenX='+left+',screenY='+top+'');
-}
-</script> -->
+
 
 </head>
 
@@ -56,42 +62,75 @@ popUpWin = open(URLStr,'popUpWin', 'toolbar=no,location=no,directories=no,status
 			<?php include('includes/sidebar.php');?>
 		<div class="content-wrapper">
 			<div class="container-fluid">
-				<!-- <div class="row">
-					<div class="col-md-12">
-						<h2 class="page-title" style="margin-top:4%">Taluk Details</h2>
-						<div class="panel panel-default">
-							<div class="panel-heading">All Room Details</div>
-							<div class="panel-body">
-								<table id="zctb" class="display table table-striped table-bordered table-hover" cellspacing="0" width="100%">
-									<thead>
-										<tr>
-											<th>Sno.</th>
-											<th>Student Name</th>
-											<th>Reg no</th>
-											<th>Contact no </th>
-											<th>room no  </th>
-											<th>Seater </th>
-											<th>Staying From </th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tfoot>
-										<tr>
-											<th>Sno.</th>
-											<th>Student Name</th>
-											<th>Reg no</th>
-											<th>Contact no </th>
-											<th>Room no  </th>
-											<th>Seater </th>
-											<th>Staying From </th>
-											<th>Action</th>
-										</tr>
-									</tfoot>
-									<tbody> -->
-					
+				 <div class="row" style="margin-top:30px">
+				  <h2 class="text-center">District Health Check-up Status</h2>
+    <h4 class="text-center"><?php echo $district; ?> District</h4>
+	 <div class="row" style="margin-top:30px">
+		<div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-body text-center">
+                    <h1><?php echo $totalStudents; ?></h1>
+                    <p>Total Students</p>
+                </div>
+            </div>
+        </div>
+		  <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-body text-center">
+                    <h1><?php echo $checked; ?></h1>
+                    <p>Health Check-up Done</p>
+                </div>
+            </div>
+        </div>
+		<div class="col-md-4">
+            <div class="panel panel-danger">
+                <div class="panel-body text-center">
+                    <h1><?php echo $notChecked; ?></h1>
+                    <p>Health Check-up Not Done</p>
+                </div>
+            </div>
+        </div>
+				<?php
+// ====== ADD THIS CODE ======
+
+//$district = "Davangere"; // change district name if needed
+// $totalStudents = 0;
+// $checked = 0;
+// $notChecked = 0;
+
+// // Total students
+// $sql1 = "SELECT COUNT(*) FROM userregistration";
+// $stmt1 = $mysqli->prepare($sql1);
+// if (!$stmt1) {
+//     die("SQL ERROR: " . $mysqli->error);
+// }
+// $stmt1->execute();
+// $stmt1->bind_result($totalStudents);
+// $stmt1->fetch();
+// $stmt1->close();
+
+// // HEALTH CHECKED
+// $sql2 = "SELECT COUNT(*) FROM userregistration WHERE medical_status='Yes'";
+// $stmt2 = $mysqli->prepare($sql2);
+// if (!$stmt2) {
+//     die("SQL ERROR: " . $mysqli->error);
+// }
+
+// $stmt2->execute();
+// $stmt2->bind_result($checked);
+// $stmt2->fetch();
+// $stmt2->close();
+
+// // Not checked
+// $notChecked = $totalStudents - $checked;
+
+// ====== END ======
+?>
+	
 					<div class="col-md-12">
 
-						<h2 class="page-title" style="margin-top:4%">Dashboard</h2>
+						<h2 class="page-title" style="margin-top:4%">Taluk Deatils</h2>
+						
 						
 						<div class="row">
 							<div class="col-md-12">
@@ -121,14 +160,14 @@ $stmt->close();
 										<div class="panel panel-default">
 											<div class="panel-body bk-warning text-light">
 												<div class="stat-panel text-center">
-<!-- <?php
+<?php
 $result2 ="select count(*) from complaints where complaintStatus='In Process'";
 $stmt2 = $mysqli->prepare($result2);
 $stmt2->execute();
 $stmt2->bind_result($count2);
 $stmt2->fetch();
 $stmt2->close();
-?>												 -->
+?>												
 													<div class="stat-panel-number h1 "><?php echo $count2;?></div>
 													<div class="stat-panel-title text-uppercase">Davanagere</div>
 												</div>
@@ -189,7 +228,7 @@ $stmt1->fetch();
 $stmt1->close();
 ?>												
 													<div class="stat-panel-number h1 "><?php echo $count1;?></div>
-													<div class="stat-panel-title text-uppercase">Closed Complaints </div>
+													<div class="stat-panel-title text-uppercase">Jaglur</div>
 												</div>
 											</div>
 											<a href="closed-complaints.php" class="block-anchor panel-footer text-center">See All &nbsp; <i class="fa fa-arrow-right"></i></a>
@@ -201,7 +240,7 @@ $aid=$_SESSION['id'];
 $ret="select * from registration";
 $stmt= $mysqli->prepare($ret) ;
 $stmt->bind_param('i',$aid);
-$stmt->execute() ;//ok
+$stmt->execute() ;
 $res=$stmt->get_result();
 $cnt=1;
 while($row=$res->fetch_object())
@@ -221,24 +260,8 @@ while($row=$res->fetch_object())
 									<?php
 
 									 } ?> -->
-<!-- 											
-										
-									</tbody>
-								</table>
-
-								
-							</div>
-						</div>
-
-					
-					</div>
-				</div>
-
-			
-
-			</div>
-		</div>
-	</div> -->
+    </div>
+</div>
 
 	<!-- Loading Scripts
 	<script src="js/jquery.min.js"></script>

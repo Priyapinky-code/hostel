@@ -3,18 +3,50 @@ session_start();
 include('includes/config.php');
 include('includes/checklogin.php');
 check_login();
+$taluk = 'Harihara'; 
 
-if(isset($_GET['del']))
-{
-	$id=intval($_GET['del']);
-	$adn="delete from registration where regNo=?";
-		$stmt= $mysqli->prepare($adn);
-		$stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	   
+/* TOTAL GIRLS */
+$q2 = $mysqli->prepare("SELECT COUNT(*) FROM userRegistration WHERE gender='female' AND taluk=?");
+$q2->bind_param("s", $taluk);
+$q2->execute();
+$q2->bind_result($totalGirls);
+$q2->fetch();
+$q2->close();
+ /* TOTAL BOYS */
+$q1 = $mysqli->prepare("SELECT COUNT(*) FROM userRegistration WHERE gender='male' AND taluk=?");
+$q1->bind_param("s", $taluk);
+$q1->execute();
+$q1->bind_result($totalBoys);
+$q1->fetch();
+$q1->close();
 
+/* CHECKED GIRLS */
+$q4 = $mysqli->prepare("
+    SELECT COUNT(*) 
+    FROM userRegistration 
+    WHERE gender='female' AND medical_status='Yes' AND taluk=?
+");
+$q4->bind_param("s", $taluk);
+$q4->execute();
+$q4->bind_result($checkedGirls);
+$q4->fetch();
+$q4->close();
 
-}
+/* CHECKED BOYS */
+$q3 = $mysqli->prepare("
+    SELECT COUNT(*) 
+    FROM userRegistration 
+    WHERE gender='male' AND medical_status='Yes' AND taluk=?
+");
+$q3->bind_param("s", $taluk);
+$q3->execute();
+$q3->bind_result($checkedBoys);
+$q3->fetch();
+$q3->close();
+/* NOT CHECKED */
+$notCheckedGirls = $totalGirls - $checkedGirls;
+$notCheckedBoys  = $totalBoys  - $checkedBoys;
+
 ?>
 <!doctype html>
 <html lang="en" class="no-js">
@@ -26,7 +58,7 @@ if(isset($_GET['del']))
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<meta name="theme-color" content="#3e454c">
-	<title>Manage Rooms</title>
+	<title>Harihara</title>
 	<link rel="stylesheet" href="css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/dataTables.bootstrap.min.css">
@@ -35,17 +67,7 @@ if(isset($_GET['del']))
 	<link rel="stylesheet" href="css/fileinput.min.css">
 	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
 	<link rel="stylesheet" href="css/style.css">
-<script language="javascript" type="text/javascript">
-var popUpWin=0;
-function popUpWindow(URLStr, left, top, width, height)
-{
- if(popUpWin)
-{
-if(!popUpWin.closed) popUpWin.close();
-}
-popUpWin = open(URLStr,'popUpWin', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no,copyhistory=yes,width='+510+',height='+430+',left='+left+', top='+top+',screenX='+left+',screenY='+top+'');
-}
-</script>
+
 
 </head>
 
@@ -56,69 +78,75 @@ popUpWin = open(URLStr,'popUpWin', 'toolbar=no,location=no,directories=no,status
 			<?php include('includes/sidebar.php');?>
 		<div class="content-wrapper">
 			<div class="container-fluid">
+				
 				<div class="row">
 					<div class="col-md-12">
-						<h2 class="page-title" style="margin-top:4%">Student Feedback</h2>
+						<h2 class="page-title" style="margin-top:4%">Harihara Details</h2>
 						<div class="panel panel-default">
-							<div class="panel-heading">All Room Details</div>
+							<div class="panel-heading">harihara Details</div>
 							<div class="panel-body">
-								<table id="zctb" class="display table table-striped table-bordered table-hover" cellspacing="0" width="100%">
-									<thead>
-										<tr>
-											<th>Sno.</th>
-											<th>Student Name</th>
-											<th>Reg no</th>
-											<th>room no  </th>
-											<th>Seater </th>
-											<th>Staying From </th>
-											<th>Feedback Date </th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tfoot>
-										<tr>
-											<th>Sno.</th>
-											<th>Student Name</th>
-											<th>Reg no</th>
-											<th>Room no  </th>
-											<th>Seater </th>
-											<th>Staying From </th>
-											<th>Feedback Date </th>
-											<th>Action</th>
-										</tr>
-									</tfoot>
-									<tbody>
-<?php	
+								<!-- GIRLS CARD -->
+  <div class="col-md-6">
+    <div class="panel panel-danger" style="border-radius:8px;">
+      <div class="panel-heading text-center">
+        <i class="fa fa-female"></i> <b>Girls Health Status</b>
+      </div>
+      <div class="panel-body text-center">
+        <h1 style="color:#2c3e50;"><?php echo $totalGirls; ?></h1> 
+        <p>Total Girls</p>
+
+        <hr>
+
+        <h3 style="color:green;">
+          ✔ Checked: <?php echo $checkedGirls; ?>
+        </h3>
+
+        <h3 style="color:red;">
+          ❌ Not Checked: <?php echo $notCheckedGirls; ?>
+        </h3>
+      </div>
+    </div>
+  </div>
+<div class="row">
+
+  <!-- BOYS CARD -->
+  <div class="col-md-6">
+    <div class="panel panel-primary" style="border-radius:8px;">
+      <div class="panel-heading text-center">
+        <i class="fa fa-male"></i> <b>Boys Health Status</b>
+      </div>
+      <div class="panel-body text-center">
+        <h1 style="color:#2c3e50;"><?php echo $totalBoys; ?></h1> 
+        <p>Total Boys</p>
+
+        <hr>
+
+        <h3 style="color:green;">
+          ✔ Checked: <?php echo $checkedBoys; ?>
+        </h3>
+
+        <h3 style="color:red;">
+          ❌ Not Checked: <?php echo $notCheckedBoys; ?>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  
+
+</div>
+				
+ <?php	
 $aid=$_SESSION['id'];
-$ret="select * from registration
-JOIN userregistration on userregistration.email=registration.emailid
-join feedback on userregistration.id=feedback.userId";
+$ret="select * from complaints where complaintStatus='In Process'";
 $stmt= $mysqli->prepare($ret) ;
-//$stmt->bind_param('i',$aid);
-$stmt->execute() ;//ok
+$stmt->execute() ;
 $res=$stmt->get_result();
 $cnt=1;
-while($row=$res->fetch_object())
-	  {
-	  	?>
-<tr><td><?php echo $cnt;;?></td>
-<td><?php echo $row->firstName;?><?php echo $row->middleName;?><?php echo $row->lastName;?></td>
-<td><?php echo $row->regno;?></td>
-<td><?php echo $row->roomno;?></td>
-<td><?php echo $row->seater;?></td>
-<td><?php echo $row->stayfrom;?></td>
-<td><?php echo $row->postinDate;?></td>
-<td>
-<a href="feedback-details.php?regno=<?php echo $row->regno;?>&&uid=<?php echo $row->userId;?>" title="View Full Details" target="blank"><i class="fa fa-desktop"></i></a>&nbsp;&nbsp;
-</td>
-										</tr>
-									<?php
-$cnt=$cnt+1;
-									 } ?>
+ ?> 
 											
 										
-									</tbody>
-								</table>
+								
 
 								
 							</div>
